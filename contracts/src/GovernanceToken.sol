@@ -13,7 +13,7 @@ contract GovernanceToken is ERC20Votes, Ownable {
     }
 
     /// @notice Delegate voting power only once
-    function delegateOnce(address to) public {
+    function delegateOnce(address to) public {  
         require(!hasDelegated[msg.sender], "Already delegated");
         require(!hasVoted[msg.sender], "Already voted");
         _delegate(to);

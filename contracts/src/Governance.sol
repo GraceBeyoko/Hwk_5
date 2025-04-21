@@ -42,9 +42,9 @@ contract GovernanceCore {
     }
 
     mapping(uint256 => Proposal) public proposals;
-    mapping(uint256 => mapping(address => bool)) public proposalVoters;
     address[3] public multiSigSigners;
     mapping(uint256 => mapping(address => bool)) public proposalConfirmations;
+    mapping(uint256 => mapping(address => bool)) public hasVoted;
 
 
     event ProposalCreated(
@@ -107,9 +107,14 @@ contract GovernanceCore {
     /// @notice Quadratic vote (support = true for yes, false for no)
     function castVoteQuadratic(uint256 proposalId, bool support, uint256 amount) public {
         Proposal storage p = proposals[proposalId];
+        
+        if (p.state == ProposalState.Pending && block.timestamp >= p.voteStart) {
+            p.state = ProposalState.Active;
+        }
 
         require(block.timestamp >= p.voteStart && block.timestamp <= p.voteEnd, "Voting not active");
-        require(!p.hasVoted[msg.sender], "Already voted");
+        require(!hasVoted[proposalId][msg.sender], "Already voted");
+        hasVoted[proposalId][msg.sender] = true;
 
         // ✅ Eligibility: must have token votes
         require(token.getVotes(msg.sender) > 0, "Not eligible");
@@ -126,7 +131,6 @@ contract GovernanceCore {
         }
 
         p.totalQuadraticVotes += sqrtVote;
-        p.hasVoted[msg.sender] = true;
 
         emit VoteCast(proposalId, msg.sender, support, amount, sqrtVote);
     }
