@@ -31,17 +31,21 @@ contract GovernanceCore {
         address proposer;
         string description;
         bytes callData;
-        uint256 voteStart;
-        uint256 voteEnd;
+        uint40 voteStart;  // Packed timestamps
+        uint40 voteEnd;
         ProposalState state;
         ProposalType pType;
         uint256 totalQuadraticVotes;
         uint256 yesVotes;
         uint256 noVotes;
-        mapping(address => bool) hasVoted;
+        // Moved mapping to separate storage slot
     }
 
     mapping(uint256 => Proposal) public proposals;
+    mapping(uint256 => mapping(address => bool)) public proposalVoters;
+    address[3] public multiSigSigners;
+    mapping(uint256 => mapping(address => bool)) public proposalConfirmations;
+
 
     event ProposalCreated(
         uint256 indexed proposalId,
@@ -62,8 +66,9 @@ contract GovernanceCore {
 
     event ProposalExecuted(uint256 indexed proposalId);
 
-    constructor(address _tokenAddress) {
+    constructor(address _tokenAddress, address[3] memory _signers) {
         token = GovernanceToken(_tokenAddress);
+        multiSigSigners = _signers;
     }
 
     /// @notice Create proposal (Routine or Strategic)
@@ -89,6 +94,14 @@ contract GovernanceCore {
         p.pType = _pType;
 
         emit ProposalCreated(proposalId, msg.sender, _description, start, end, _pType);
+    }
+
+    // Add confirmation function
+    function confirmProposalExecution(uint256 proposalId) public {
+        require(isMultiSigSigner(msg.sender), "Not authorized signer");
+        require(proposals[proposalId].state == ProposalState.Succeeded, "Proposal not passed");
+        
+        proposalConfirmations[proposalId][msg.sender] = true;
     }
 
     /// @notice Quadratic vote (support = true for yes, false for no)
@@ -134,17 +147,17 @@ contract GovernanceCore {
         }
     }
 
-    /// @notice Execute a passed proposal (Routine or Strategic)
+    // Modified executeProposal with multi-sig
     function executeProposal(uint256 proposalId) public {
         Proposal storage p = proposals[proposalId];
         require(p.state == ProposalState.Succeeded, "Proposal not passed");
         require(p.callData.length > 0, "No executable call");
+        require(getConfirmationsCount(proposalId) >= 2, "Insufficient confirmations");
 
         (bool success, ) = address(this).call(p.callData);
         require(success, "Call execution failed");
 
         p.state = ProposalState.Executed;
-
         emit ProposalExecuted(proposalId);
     }
 
@@ -183,14 +196,44 @@ contract GovernanceCore {
         return p.state;
     }
 
-    /// @notice Babylonian integer square root
+    /// @notice Yul implementation of Babylonian square root
+    /// @dev Uses assembly for gas efficiency
+    /// @param x The number to calculate square root of
+    /// @return y The square root of x
     function sqrt(uint256 x) internal pure returns (uint256 y) {
-        if (x == 0) return 0;
-        uint256 z = x / 2 + 1;
-        y = x;
-        while (z < y) {
-            y = z;
-            z = (x / z + z) / 2;
+        assembly {
+            // Handle edge case
+            if iszero(x) {
+                return(0, 0)
+            }
+            
+            let z := add(div(x, 2), 1)
+            y := x
+            
+            for {} lt(z, y) {} {
+                y := z
+                z := div(add(div(x, z), z), 2)
+            }
         }
+    }
+
+    // Aux functions
+    function isMultiSigSigner(address _address) private view returns (bool) {
+        for (uint i = 0; i < 3; i++) {
+            if (multiSigSigners[i] == _address) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function getConfirmationsCount(uint256 proposalId) private view returns (uint256) {
+        uint256 count = 0;
+        for (uint i = 0; i < 3; i++) {
+            if (proposalConfirmations[proposalId][multiSigSigners[i]]) {
+                count++;
+            }
+        }
+        return count;
     }
 }
