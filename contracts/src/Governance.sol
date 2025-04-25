@@ -88,8 +88,8 @@ contract GovernanceCore {
         p.proposer = msg.sender;
         p.description = _description;
         p.callData = _callData;
-        p.voteStart = start;
-        p.voteEnd = end;
+        p.voteStart = uint40(start);
+        p.voteEnd = uint40(end);
         p.state = ProposalState.Pending;
         p.pType = _pType;
 
