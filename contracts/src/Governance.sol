@@ -96,7 +96,7 @@ contract GovernanceCore {
         emit ProposalCreated(proposalId, msg.sender, _description, start, end, _pType);
     }
 
-    // Add confirmation function
+    // Add confirmation function (add check to only confirm once per user!)
     function confirmProposalExecution(uint256 proposalId) public {
         require(isMultiSigSigner(msg.sender), "Not authorized signer");
         require(proposals[proposalId].state == ProposalState.Succeeded, "Proposal not passed");
