@@ -31,10 +31,10 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
 
 3. **Run the following command** : 
 ```plaintext
-   forge install
+   forge install #unnecessary?
    forge build
    forge test
-   forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast --verify
+   forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast --verify #doesn't exist yet
 ```
 
 ## Usage Example  (NOT SURE ABOUT THIS PART YET)
@@ -58,5 +58,5 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
 
 ## Members of the group and contact 
 Grace B. - @GraceBeyoko <br> 
-Arina A. -
+Arina A. - @rinaaro <br>
 
