@@ -59,4 +59,5 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
 ## Members of the group and contact 
 Grace B. - @GraceBeyoko <br> 
 Arina A. - @rinaaro <br>
+Jahad J. - @Jahad812 <br>
 
