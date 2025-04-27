@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.25;
 
 /**
  * @title Governance
@@ -19,9 +19,12 @@ contract GovernanceCore {
 
     uint256 public proposalCount;
     uint256 public constant PROPOSAL_THRESHOLD = 10 * 1e18;
-    uint256 public constant VOTING_PERIOD = 5 days;
-    uint256 public constant VOTING_DELAY = 1 days;
-    uint256 public constant MIN_TOTAL_VOTES_FOR_PASS = 5; // example threshold (sqrt votes)
+    uint256 public constant VOTING_PERIOD = 15 minutes; //for testing
+    uint256 public constant VOTING_DELAY = 1 minutes;
+    uint256 public constant MIN_TOTAL_VOTES_FOR_PASS = 1; // sqrt votes
+
+    // Caching the contract address
+    address private _contractAddress;
 
     enum ProposalState { Pending, Active, Succeeded, Defeated, Executed }
     enum ProposalType { Routine, Strategic }
@@ -46,13 +49,10 @@ contract GovernanceCore {
     mapping(uint256 => mapping(address => bool)) public proposalConfirmations;
     mapping(uint256 => mapping(address => bool)) public hasVoted;
 
-
     event ProposalCreated(
         uint256 indexed proposalId,
         address proposer,
         string description,
-        uint256 voteStart,
-        uint256 voteEnd,
         ProposalType proposalType
     );
 
@@ -69,6 +69,8 @@ contract GovernanceCore {
     constructor(address _tokenAddress, address[3] memory _signers) {
         token = GovernanceToken(_tokenAddress);
         multiSigSigners = _signers;
+        // Initialize the cached contract address
+        _contractAddress = address(this);
     }
 
     /// @notice Create proposal (Routine or Strategic)
@@ -77,7 +79,7 @@ contract GovernanceCore {
         bytes memory _callData,
         ProposalType _pType
     ) public {
-        require(token.getVotes(msg.sender) >= PROPOSAL_THRESHOLD, "Insufficient voting power");
+        require(token.getVotes(msg.sender) > PROPOSAL_THRESHOLD - 1, "Insufficient voting power");
 
         uint256 proposalId = proposalCount++;
         uint256 start = block.timestamp + VOTING_DELAY;
@@ -93,16 +95,26 @@ contract GovernanceCore {
         p.state = ProposalState.Pending;
         p.pType = _pType;
 
-        emit ProposalCreated(proposalId, msg.sender, _description, start, end, _pType);
+        emit ProposalCreated(proposalId, msg.sender, _description, _pType);
     }
 
     // Add confirmation function (add check to only confirm once per user!)
     function confirmProposalExecution(uint256 proposalId) public {
-        require(isMultiSigSigner(msg.sender), "Not authorized signer");
-        require(proposals[proposalId].state == ProposalState.Succeeded, "Proposal not passed");
-        
-        proposalConfirmations[proposalId][msg.sender] = true;
+    bool isSigner = false;
+    for (uint i = 0; i < 3; ++i) {
+        if (multiSigSigners[i] == msg.sender) {
+            isSigner = true;
+            break;
+        }
     }
+    require(isSigner, "Not authorized signer");
+
+    Proposal storage p = proposals[proposalId];
+    require(p.state == ProposalState.Succeeded, "Proposal not passed");
+
+    proposalConfirmations[proposalId][msg.sender] = true;
+}
+
 
     /// @notice Quadratic vote (support = true for yes, false for no)
     function castVoteQuadratic(uint256 proposalId, bool support, uint256 amount) public {
@@ -116,11 +128,11 @@ contract GovernanceCore {
         require(!hasVoted[proposalId][msg.sender], "Already voted");
         hasVoted[proposalId][msg.sender] = true;
 
-        // ✅ Eligibility: must have token votes
+        // Eligibility: must have token votes
         require(token.getVotes(msg.sender) > 0, "Not eligible");
 
         // Lock or transfer token (simplified)
-        token.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(msg.sender, _contractAddress, amount);  // Use cached address
 
         uint256 sqrtVote = sqrt(amount);
 
@@ -155,10 +167,10 @@ contract GovernanceCore {
     function executeProposal(uint256 proposalId) public {
         Proposal storage p = proposals[proposalId];
         require(p.state == ProposalState.Succeeded, "Proposal not passed");
-        require(p.callData.length > 0, "No executable call");
-        require(getConfirmationsCount(proposalId) >= 2, "Insufficient confirmations");
+        require(p.callData.length != 0, "No executable call");
+        require(getConfirmationsCount(proposalId) > 1, "Insufficient confirmations");
 
-        (bool success, ) = address(this).call(p.callData);
+        (bool success, ) = _contractAddress.call(p.callData);  // Use cached address
         require(success, "Call execution failed");
 
         p.state = ProposalState.Executed;
@@ -169,7 +181,7 @@ contract GovernanceCore {
     function selectProposalRandomly(uint256[] memory proposalIds) public view returns (uint256) {
         uint256 totalWeight = 0;
 
-        for (uint i = 0; i < proposalIds.length; i++) {
+        for (uint i = 0; i < proposalIds.length; ++i) {
             require(proposals[proposalIds[i]].pType == ProposalType.Strategic, "Not strategic");
             require(block.timestamp > proposals[proposalIds[i]].voteEnd, "Voting not ended");
             require(proposals[proposalIds[i]].state == ProposalState.Succeeded, "Not passed");
@@ -181,7 +193,7 @@ contract GovernanceCore {
         uint256 rand = uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), msg.sender))) % totalWeight;
 
         uint256 cumulative = 0;
-        for (uint i = 0; i < proposalIds.length; i++) {
+        for (uint i = 0; i < proposalIds.length; ++i) {
             cumulative += proposals[proposalIds[i]].yesVotes;
             if (rand < cumulative) {
                 return proposalIds[i];
@@ -221,23 +233,14 @@ contract GovernanceCore {
         }
     }
 
-    // Aux functions
-    function isMultiSigSigner(address _address) private view returns (bool) {
-        for (uint i = 0; i < 3; i++) {
-            if (multiSigSigners[i] == _address) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     function getConfirmationsCount(uint256 proposalId) private view returns (uint256) {
         uint256 count = 0;
-        for (uint i = 0; i < 3; i++) {
+        for (uint i = 0; i < 3; ++i) {
             if (proposalConfirmations[proposalId][multiSigSigners[i]]) {
                 count++;
             }
         }
+        require(count > 1, "Insufficient confirmations");
         return count;
     }
 }
