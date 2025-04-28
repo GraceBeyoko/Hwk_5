@@ -1,4 +1,5 @@
 [profile.default]
-src = "contracts/src"
-out = "contracts/out"
-libs = ["contracts/lib", "node_modules/@openzeppelin/contracts"]
+src = "src"
+out = "out"
+tests = "test"
+gas-reporting = true
