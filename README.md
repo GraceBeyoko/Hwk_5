@@ -8,7 +8,7 @@ This DAO has been created in the context of our Solidity class as part of Homewo
  
 ## What is the DAO about
  
-Arti DAO is a decentralized autonomous organization focused on curating and showcasing emerging artists. It allows members to propose new artworks, vote on featured pieces, and update a virtual gallery through on-chain governance.
+Arti DAO is a decentralized autonomous organization focused on curating and showcasing emerging artists. It allows members to propose new artworks and update a virtual gallery through on-chain governance. Members can delegate their voting power, vote on proposals, and exit the DAO entirely by rage quitting, burning their tokens and resetting their governance status.
  
 
  
@@ -18,7 +18,7 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
  
 - **Foundry**: Testing and deployment
  
-- **OpenZeppelin**: ERC721 contracts
+- **OpenZeppelin**: ERC20 contracts and standard utilities
  
 - **Hardhat**: Optional for local testing
  
@@ -26,14 +26,9 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
  
 ### Smart Contracts
  
-1. **Curator NFT**: A non-transferable soulbound ERC721 token for members
+1. **GovernanceToken**: An ERC20 token contract allowing delegation, voting, and rage quitting. Users can delegate their voting power, vote on proposals, and rage quit to burn their tokens and reset their status.
  
-2. **Governance Contract**: Manages proposals and voting
- 
-3. **Gallery Contract**: Records and displays featured artworks
- 
-4. **MultiSig Execution Mechanism**: Ensures safe execution of on-chain proposals
- 
+2. **Governance Contract**: Manages the creation of proposals and voting logic. Tracks proposals and their execution status based on community votes.
 
  
 ## Requirements to Run Locally (NOT SURE ABOUT THIS PART YET)
