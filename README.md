@@ -50,27 +50,27 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
  
 2. **Environment Setup**:
  
-   Create a `.env` file with the following:
+Create a `.env` file with the following:
  
-   ```plaintext
+```plaintext
  
-   PRIVATE_KEY=your-wallet-private-key
+PRIVATE_KEY=your-wallet-private-key
  
-   SEPOLIA_RPC_URL=your-sepolia-rpc-url
+SEPOLIA_RPC_URL=your-sepolia-rpc-url
  
-
+```
  
 3. **Run the following command** : 
  
 ```plaintext
  
-   forge install #unnecessary?
+forge install #unnecessary?
  
-   forge build
+forge build
  
-   forge test
- 
-   forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast --verify #doesn't exist yet
+forge test #have to write the test code
+
+forge create src/GovernanceToken.sol:GovernanceToken $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
  
 ```
  
@@ -114,7 +114,7 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
  
 
  
-## Members of the group and contact 
+## Members of the group and contact???
  
 Grace B. - @GraceBeyoko <br> 
  
