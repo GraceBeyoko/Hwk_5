@@ -76,45 +76,33 @@ forge create src/GovernanceToken.sol:GovernanceToken $SEPOLIA_RPC_URL --private-
  
 
  
-## Usage Example  (NOT SURE ABOUT THIS PART YET)
- 
-1. **Mint a Curator NFT.ERC**  
- 
-   - Deploy the `CuratorNFT` contract.
- 
-   - Call the `mint(address to)` function to mint a non-transferable curator token to a new member. (Delete that if ERC20)
+## Usage Example 
+
+1. **Deploy the GovernanceToken contract**
+
+Deploy the `GovernanceToken` contract first to create the governance token.
+
+2. **Deploy the Governance contract**
+
+Deploy the `Governance contract`, passing in the address of the deployed GovernanceToken.
+
+4. **Create a Proposal**
+
+Call `createProposal(string calldata description)` on the Governance contract.
+
+5. **Vote on Proposals**
+
+Call `vote(uint256 proposalId, bool support)` on the Governance contract to vote.
+
+6. **Execute Approved Proposals**
+
+Once voting is completed and a proposal has passed, it can be executed.
  
 
  
-2. **Propose a New Artwork**  
- 
-   - Through the `Governance` contract, call `createProposal(string memory description, string memory artworkURL)`.
- 
-   - Members holding a Curator NFT/tokens can create proposals.
- 
 
  
-3. **Vote on Proposals**  
- 
-   - Members vote using the `vote(uint256 proposalId, bool support)` function.
- 
-   - Voting results are automatically tallied after a set duration
- 
-
- 
-4. **Execute Approved Proposals**  
- 
-   - Once a proposal passes, execute it to add the new artwork to the `Gallery` contract.
- 
-
- 
-5. **View the Gallery**  
- 
-   - Query the `Gallery` contract to retrieve and display featured artworks.
- 
-
- 
-## Members of the group and contact???
+## Members of the group and contact
  
 Grace B. - @GraceBeyoko <br> 
  
