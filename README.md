@@ -84,22 +84,21 @@ Deploy the `GovernanceToken` contract first to create the governance token.
 
 2. **Deploy the Governance contract**
 
-Deploy the `Governance contract`, passing in the address of the deployed GovernanceToken.
+Deploy the `Governance contract`, passing in the address of the deployed `GovernanceToken`.
 
 4. **Create a Proposal**
 
-Call `createProposal(string calldata description)` on the Governance contract.
+Call `createProposal(string calldata description)` on the `Governance` contract.
 
 5. **Vote on Proposals**
 
-Call `vote(uint256 proposalId, bool support)` on the Governance contract to vote.
+Call `vote(uint256 proposalId, bool support)` on the `Governance` contract to vote.
 
 6. **Execute Approved Proposals**
 
 Once voting is completed and a proposal has passed, it can be executed.
  
 
- 
 
  
 ## Members of the group and contact
