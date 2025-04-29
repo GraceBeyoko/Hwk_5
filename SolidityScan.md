@@ -1,7 +1,7 @@
 SolidityScan Report
-GovernanceToken.sol
+ArtGalleryToken.sol
 
-File: Hwk_5/src/GovernanceToken.sol
+File: Hwk_5/src/ArtGalleryToken.sol
 Issues
 | #  | Name                                  | Severity       | Confidence | Description                                                           | Remediation        |
 |----|---------------------------------------|----------------|------------|-----------------------------------------------------------------------|--------------------|
