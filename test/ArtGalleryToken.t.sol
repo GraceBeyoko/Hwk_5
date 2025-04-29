@@ -2,20 +2,20 @@
 pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
-import "../src/Governance.sol";
-import "../src/GovernanceToken.sol";
+import "../src/Gallery.sol";
+import "../src/ArtGalleryToken.sol";
 
-contract GovernanceTest is Test {
-    GovernanceCore core;
-    GovernanceToken token;
+contract GalleryTest is Test {
+    GalleryCore core;
+    ArtGalleryToken token;
     address owner = address(1);
     address user1 = address(2);
 
     function setUp() public {
         vm.startPrank(owner);
-        token = new GovernanceToken();
+        token = new ArtGalleryToken();
         address[3] memory signers = [address(10), address(11), address(12)];
-        core = new GovernanceCore(address(token), signers);
+        core = new GalleryCore(address(token), signers);
         token.mint(user1, 100e18);
         vm.stopPrank();
     }
@@ -64,7 +64,7 @@ contract GovernanceTest is Test {
         // Handle delegation
         if (delegatee == address(0)) {
             // Expect revert on zero address delegation
-            vm.expectRevert(GovernanceToken.ZeroAddress.selector);
+            vm.expectRevert(ArtGalleryToken.ZeroAddress.selector);
             vm.startPrank(user1);
             token.delegate(delegatee);
             vm.stopPrank();
@@ -87,7 +87,7 @@ contract GovernanceTest is Test {
             vm.stopPrank();
             assertEq(token.balanceOf(user1), 0, "RageQuit should burn all tokens.");
         } else {
-            vm.expectRevert(GovernanceToken.NoTokensToRageQuit.selector);
+            vm.expectRevert(ArtGalleryToken.NoTokensToRageQuit.selector);
             vm.startPrank(user1);
             token.rageQuit();
             vm.stopPrank();
@@ -118,7 +118,7 @@ contract GovernanceTest is Test {
         // Create the proposal from user1
         bytes memory callData = abi.encodeWithSignature("getProposalState(uint256)", 0);
         vm.prank(user1);
-        core.createProposal("Proposal 1", callData, GovernanceCore.ProposalType.Routine);
+        core.createProposal("Proposal 1", callData, GalleryCore.ProposalType.Routine);
 
         // Advance time to allow voting
         uint256 voteStartTime = block.timestamp + core.VOTING_DELAY();
@@ -155,6 +155,6 @@ contract GovernanceTest is Test {
         
         // Assert final state
         state = core.getProposalState(0);
-        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Executed));
+        assertEq(uint8(state), uint8(GalleryCore.ProposalState.Executed));
     }
 }
