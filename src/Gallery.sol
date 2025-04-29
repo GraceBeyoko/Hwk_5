@@ -228,17 +228,4 @@ contract GalleryCore is ReentrancyGuard {
         }
         return count;
     }
-
-    /// @notice Refund tokens after voting has ended and proposal is finalized
-    function claimRefund(uint256 proposalId) public nonReentrant {
-        Proposal storage p = proposals[proposalId];
-        require(block.timestamp > p.voteEnd, "Voting still active");
-        require(p.state == ProposalState.Succeeded || p.state == ProposalState.Defeated, "Proposal not finalized");
-
-        uint256 deposited = voterDeposits[proposalId][msg.sender];
-        require(deposited > 0, "No refundable deposit");
-
-        voterDeposits[proposalId][msg.sender] = 0;
-        require(token.transfer(msg.sender, deposited), "Refund transfer failed");
-    }
 }
