@@ -19,9 +19,9 @@ contract GovernanceCore {
 
     uint256 public proposalCount;
     uint256 public constant PROPOSAL_THRESHOLD = 10 * 1e18;
-    uint256 public constant VOTING_PERIOD = 15 minutes; //for testing
-    uint256 public constant VOTING_DELAY = 1 minutes;
-    uint256 public constant MIN_TOTAL_VOTES_FOR_PASS = 1; // sqrt votes
+    uint256 public constant VOTING_PERIOD = 5 days; 
+    uint256 public constant VOTING_DELAY = 1 days;
+    uint256 public constant MIN_TOTAL_VOTES_FOR_PASS = 5; // sqrt votes
 
     // Caching the contract address
     address private _contractAddress;
@@ -216,7 +216,7 @@ contract GovernanceCore {
     /// @dev Uses assembly for gas efficiency
     /// @param x The number to calculate square root of
     /// @return y The square root of x
-    function sqrt(uint256 x) internal pure returns (uint256 y) {
+    function sqrt(uint256 x) public pure returns (uint256 y) {
         assembly {
             // Handle edge case
             if iszero(x) {
