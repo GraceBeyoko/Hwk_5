@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 /**
- * @title Governance
+ * @title Gallery
  * @dev This contract implements DAO governance with:
  * - Proposal creation (Routine/Strategic)
  * - Quadratic voting
@@ -12,10 +12,10 @@ pragma solidity ^0.8.25;
  * - Weighted random dictatorship for strategic proposals
  */
 
-import "./GovernanceToken.sol";
+import "./ArtGalleryToken.sol";
 
 contract GovernanceCore {
-    GovernanceToken public token;
+    ArtGalleryToken public token;
 
     uint256 public proposalCount;
     uint256 public constant PROPOSAL_THRESHOLD = 10 * 1e18;
