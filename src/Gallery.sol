@@ -13,17 +13,17 @@ pragma solidity ^0.8.25;
  */
 
 import "./ArtGalleryToken.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract GalleryCore {
+contract GalleryCore is ReentrancyGuard {
     ArtGalleryToken public token;
 
     uint256 public proposalCount;
     uint256 public constant PROPOSAL_THRESHOLD = 10 * 1e18;
-    uint256 public constant VOTING_PERIOD = 5 days; 
+    uint256 public constant VOTING_PERIOD = 5 days;
     uint256 public constant VOTING_DELAY = 1 days;
-    uint256 public constant MIN_TOTAL_VOTES_FOR_PASS = 5; // sqrt votes
+    uint256 public constant MIN_TOTAL_VOTES_FOR_PASS = 5;
 
-    // Caching the contract address
     address private _contractAddress;
 
     enum ProposalState { Pending, Active, Succeeded, Defeated, Executed }
@@ -34,20 +34,20 @@ contract GalleryCore {
         address proposer;
         string description;
         bytes callData;
-        uint40 voteStart;  // Packed timestamps
+        uint40 voteStart;
         uint40 voteEnd;
         ProposalState state;
         ProposalType pType;
         uint256 totalQuadraticVotes;
         uint256 yesVotes;
         uint256 noVotes;
-        // Moved mapping to separate storage slot
     }
 
     mapping(uint256 => Proposal) public proposals;
     address[3] public multiSigSigners;
     mapping(uint256 => mapping(address => bool)) public proposalConfirmations;
     mapping(uint256 => mapping(address => bool)) public hasVoted;
+    mapping(uint256 => mapping(address => uint256)) public voterDeposits;
 
     event ProposalCreated(
         uint256 indexed proposalId,
@@ -69,11 +69,9 @@ contract GalleryCore {
     constructor(address _tokenAddress, address[3] memory _signers) {
         token = ArtGalleryToken(_tokenAddress);
         multiSigSigners = _signers;
-        // Initialize the cached contract address
         _contractAddress = address(this);
     }
 
-    /// @notice Create proposal (Routine or Strategic)
     function createProposal(
         string memory _description,
         bytes memory _callData,
@@ -98,41 +96,39 @@ contract GalleryCore {
         emit ProposalCreated(proposalId, msg.sender, _description, _pType);
     }
 
-    // Add confirmation function (add check to only confirm once per user!)
     function confirmProposalExecution(uint256 proposalId) public {
-    bool isSigner = false;
-    for (uint i = 0; i < 3; ++i) {
-        if (multiSigSigners[i] == msg.sender) {
-            isSigner = true;
-            break;
+        bool isSigner = false;
+        for (uint i = 0; i < 3; ++i) {
+            if (multiSigSigners[i] == msg.sender) {
+                isSigner = true;
+                break;
+            }
         }
-    }
-    require(isSigner, "Not authorized signer");
+        require(isSigner, "Not authorized signer");
+        require(!proposalConfirmations[proposalId][msg.sender], "Already confirmed");
 
-    Proposal storage p = proposals[proposalId];
-    require(p.state == ProposalState.Succeeded, "Proposal not passed");
-
-    proposalConfirmations[proposalId][msg.sender] = true;
-}
-
-
-    /// @notice Quadratic vote (support = true for yes, false for no)
-    function castVoteQuadratic(uint256 proposalId, bool support, uint256 amount) public {
         Proposal storage p = proposals[proposalId];
-        
+        require(p.state == ProposalState.Succeeded, "Proposal not passed");
+
+        proposalConfirmations[proposalId][msg.sender] = true;
+    }
+
+    function castVoteQuadratic(uint256 proposalId, bool support, uint256 amount) public nonReentrant {
+        Proposal storage p = proposals[proposalId];
+
         if (p.state == ProposalState.Pending && block.timestamp >= p.voteStart) {
             p.state = ProposalState.Active;
         }
 
         require(block.timestamp >= p.voteStart && block.timestamp <= p.voteEnd, "Voting not active");
         require(!hasVoted[proposalId][msg.sender], "Already voted");
-        hasVoted[proposalId][msg.sender] = true;
-
-        // Eligibility: must have token votes
         require(token.getVotes(msg.sender) > 0, "Not eligible");
 
-        // Lock or transfer token (simplified)
-        token.transferFrom(msg.sender, _contractAddress, amount);  // Use cached address
+        hasVoted[proposalId][msg.sender] = true;
+
+        require(token.transferFrom(msg.sender, _contractAddress, amount), "Transfer failed");
+
+        voterDeposits[proposalId][msg.sender] = amount;  // Track locked tokens
 
         uint256 sqrtVote = sqrt(amount);
 
@@ -147,7 +143,6 @@ contract GalleryCore {
         emit VoteCast(proposalId, msg.sender, support, amount, sqrtVote);
     }
 
-    /// @notice Anyone can finalize proposal result after voting ends
     function finalizeProposal(uint256 proposalId) public {
         Proposal storage p = proposals[proposalId];
         require(block.timestamp > p.voteEnd, "Voting not ended");
@@ -163,34 +158,34 @@ contract GalleryCore {
         }
     }
 
-    // Modified executeProposal with multi-sig
-    function executeProposal(uint256 proposalId) public {
+    function executeProposal(uint256 proposalId) public nonReentrant {
         Proposal storage p = proposals[proposalId];
         require(p.state == ProposalState.Succeeded, "Proposal not passed");
         require(p.callData.length != 0, "No executable call");
         require(getConfirmationsCount(proposalId) > 1, "Insufficient confirmations");
 
-        (bool success, ) = _contractAddress.call(p.callData);  // Use cached address
+        p.state = ProposalState.Executed;
+
+        (bool success, ) = _contractAddress.call(p.callData);
         require(success, "Call execution failed");
 
-        p.state = ProposalState.Executed;
         emit ProposalExecuted(proposalId);
     }
 
-    /// @notice Select winner among strategic proposals (weighted random)
     function selectProposalRandomly(uint256[] memory proposalIds) public view returns (uint256) {
         uint256 totalWeight = 0;
 
         for (uint i = 0; i < proposalIds.length; ++i) {
-            require(proposals[proposalIds[i]].pType == ProposalType.Strategic, "Not strategic");
-            require(block.timestamp > proposals[proposalIds[i]].voteEnd, "Voting not ended");
-            require(proposals[proposalIds[i]].state == ProposalState.Succeeded, "Not passed");
-            totalWeight += proposals[proposalIds[i]].yesVotes;
+            Proposal storage p = proposals[proposalIds[i]];
+            require(p.pType == ProposalType.Strategic, "Not strategic");
+            require(block.timestamp > p.voteEnd, "Voting not ended");
+            require(p.state == ProposalState.Succeeded, "Not passed");
+            totalWeight += p.yesVotes;
         }
 
         require(totalWeight > 0, "No votes");
 
-        uint256 rand = uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), msg.sender))) % totalWeight;
+        uint256 rand = uint256(keccak256(abi.encodePacked(block.prevrandao, msg.sender))) % totalWeight;
 
         uint256 cumulative = 0;
         for (uint i = 0; i < proposalIds.length; ++i) {
@@ -212,24 +207,15 @@ contract GalleryCore {
         return p.state;
     }
 
-    /// @notice Yul implementation of Babylonian square root
-    /// @dev Uses assembly for gas efficiency
-    /// @param x The number to calculate square root of
-    /// @return y The square root of x
     function sqrt(uint256 x) public pure returns (uint256 y) {
-        assembly {
-            // Handle edge case
-            if iszero(x) {
-                return(0, 0)
-            }
-            
-            let z := add(div(x, 2), 1)
-            y := x
-            
-            for {} lt(z, y) {} {
-                y := z
-                z := div(add(div(x, z), z), 2)
-            }
+        if (x == 0) return 0;
+
+        uint256 z = (x + 1) / 2;
+        y = x;
+
+        while (z < y) {
+            y = z;
+            z = (x / z + z) / 2;
         }
     }
 
@@ -240,7 +226,19 @@ contract GalleryCore {
                 count++;
             }
         }
-        require(count > 1, "Insufficient confirmations");
         return count;
+    }
+
+    /// @notice Refund tokens after voting has ended and proposal is finalized
+    function claimRefund(uint256 proposalId) public nonReentrant {
+        Proposal storage p = proposals[proposalId];
+        require(block.timestamp > p.voteEnd, "Voting still active");
+        require(p.state == ProposalState.Succeeded || p.state == ProposalState.Defeated, "Proposal not finalized");
+
+        uint256 deposited = voterDeposits[proposalId][msg.sender];
+        require(deposited > 0, "No refundable deposit");
+
+        voterDeposits[proposalId][msg.sender] = 0;
+        require(token.transfer(msg.sender, deposited), "Refund transfer failed");
     }
 }

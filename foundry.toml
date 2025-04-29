@@ -3,3 +3,8 @@ src = "src"
 out = "out"
 tests = "test"
 gas-reporting = true
+optimizer = true
+optimizer_runs = 10000
+
+[profile.debug]
+optimizer = false
