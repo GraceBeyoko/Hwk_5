@@ -210,7 +210,7 @@ contract GalleryTest is Test {
         vm.warp(block.timestamp + votingDelay + 1);  // Add 1 extra second to ensure the delay is surpassed
     
         // Check the proposal state (it should be active after voting delay)
-        GovernanceCore.ProposalState state = core.getProposalState(0);
+        GalleryCore.ProposalState state = core.getProposalState(0);
         assertEq(uint8(state), uint8(GalleryCore.ProposalState.Active), "Proposal should be Active after voting delay");
     
         vm.stopPrank();
