@@ -22,7 +22,7 @@ contract ArtGalleryToken is ERC20, ERC20Votes, ERC20Permit, Ownable {
     event ContractDeployed(address indexed deployer);
 
     constructor() 
-        ERC20("ArtGalleryToken", "GOV")
+        ERC20("ArtGalleryToken", "AGT")
         ERC20Votes()
         ERC20Permit("ArtGalleryToken")
         Ownable(msg.sender)  
