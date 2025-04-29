@@ -73,19 +73,19 @@ forge create src/ArtGalleryToken.sol:ArtGalleryToken $SEPOLIA_RPC_URL --private-
 
 1. **Deploy the ArtGalleryToken contract**
 
-Deploy the `GovernanceToken` contract first to create the governance token.
+Deploy the `ArtGalleryToken` contract first to create the governance token.
 
-2. **Deploy the Governance contract**
+2. **Deploy the Gallery contract**
 
-Deploy the `Governance contract`, passing in the address of the deployed `GovernanceToken`.
+Deploy the `Gallery contract`, passing in the address of the deployed `ArtGalleryToken`.
 
 4. **Create a Proposal**
 
-Call `createProposal(string calldata description)` on the `Governance` contract.
+Call `createProposal(string calldata description)` on the `Gallery` contract.
 
 5. **Vote on Proposals**
 
-Call `vote(uint256 proposalId, bool support)` on the `Governance` contract to vote.
+Call `vote(uint256 proposalId, bool support)` on the `Gallery` contract to vote.
 
 6. **Execute Approved Proposals**
 
