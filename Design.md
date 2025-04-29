@@ -45,7 +45,7 @@ ADD DIAGRAM
 
 **Test**
 
-As a way to ensure that the contracts works properly, we had to run few test. For the `ArtGalleryToken` contract, here is a list of the tests conducted : 
+As a way to ensure that the contracts works properly, we conducted several tests. For the `ArtGalleryToken` contract, here is a list of the tests conducted : 
 
 - `testMint()`: This test verifies that after the mint function is called during setup, the user correctly holds exactly 100 tokens as expected.
 - `testFuzz_Mint(uint256 amount)`: This fuzz test ensures that minting any amount of tokens between 1e18 and 1e24 properly updates the user’s balance without breaking.
@@ -54,6 +54,14 @@ As a way to ensure that the contracts works properly, we had to run few test. Fo
 - `testFuzz_DelegateAndRageQuit(address delegatee, uint256 amount)` : This complex fuzz test checks that delegation succeeds or reverts for invalid addresses and that rage quitting properly burns all tokens afterwards.
 - `testFullProposalLifecycle()` : This end-to-end test verifies that proposals can be created, voted on, finalized, confirmed by signers, and executed fully through their lifecycle.
 
+For the `Gallery` contract, the following tests were performed : 
+
+- `testCreateProposal` : Tests that a user with enough delegated tokens can successfully create a proposal and that the proposal’s state is set to "pending".
+- `testCreateProposalWithInsufficientVotingPower` : Tests that a user with not enough voting power fails to create a proposal and triggers an "insufficient" voting power revert.
+- `testCastVoteQuadratic` : Tests that a user can cast a quadratic vote on a proposal and verifies that the vote counts (yes, no, total) are updated correctly using the square root of the token amount.
+- `testFuzzCreateProposal` : Verifies that a user can create a proposal with a random token amount between 1 and 100 tokens, ensuring the proposal moves to "pending" state.
+- `testFuzzCastVoteQuadratic` : Checks that quadratic voting works correctly with random token amounts between 1 and 100 tokens, validating that the quadratic votes are computed accurately.
+- `testFuzzProposalState` : After creating a proposal, it fast-forwards time with a random future timestamp and checks that the proposal correctly transitions to "active" after the voting delay.
 
 
 **Reflection**
