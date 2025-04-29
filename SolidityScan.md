@@ -27,9 +27,9 @@ Scan Summary:
 
     Issue Distribution: { "critical": 2, "gas": 5, "high": 0, "informational": 10, "low": 5, "medium": 0 }
 
-Governance.sol
+Gallery.sol
 
-File: Hwk_5/src/Governance.sol
+File: Hwk_5/src/Gallery.sol
 Issues
 | #  | Name                                  | Severity       | Confidence | Description                                                           | Remediation        |
 |----|---------------------------------------|----------------|------------|-----------------------------------------------------------------------|--------------------|
