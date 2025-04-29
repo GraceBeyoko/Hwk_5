@@ -61,7 +61,7 @@ SEPOLIA_RPC_URL=your-sepolia-rpc-url
  
 forge build
  
-forge test #have to write the test code
+forge test 
 
 forge create src/ArtGalleryToken.sol:ArtGalleryToken $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
  
