@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract GovernanceToken is ERC20, ERC20Votes, ERC20Permit, Ownable {
+contract ArtGalleryToken is ERC20, ERC20Votes, ERC20Permit, Ownable {
     mapping(address => bool) private _hasDelegated;
     mapping(address => bool) private _hasVoted;
 
