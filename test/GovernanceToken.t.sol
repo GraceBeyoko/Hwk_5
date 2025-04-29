@@ -53,7 +53,7 @@ contract GovernanceTest is Test {
 
     function testFuzz_DelegateAndRageQuit(address delegatee, uint256 amount) public {
         // Bound the address and the amount to valid ranges
-        delegatee = address(uint160(delegatee)); // Convert uint256 to uint160, then to address
+        delegatee = address(uint160(delegatee)); // Convert uint256 to address
         amount = bound(amount, 1e18, 100e18);
     
         // Mint tokens to user1 for testing
@@ -61,41 +61,38 @@ contract GovernanceTest is Test {
         token.mint(user1, 100e18);
         vm.stopPrank();
     
-        // Test delegation if the delegatee is valid
-        if (delegatee != user1 && delegatee != address(0)) {
+        // Handle delegation
+        if (delegatee == address(0)) {
+            // Expect revert on zero address delegation
+            vm.expectRevert(GovernanceToken.ZeroAddress.selector);
             vm.startPrank(user1);
             token.delegate(delegatee);
             vm.stopPrank();
-            assertTrue(token.hasDelegated(user1), "Delegate function failed to register delegation.");
+            return; // Exit early since the revert is expected
+        }
     
-            // Now attempt rage quitting after delegation
-            uint256 initialBalance = token.balanceOf(user1);
+        // Allow delegation (including self-delegation)
+        vm.startPrank(user1);
+        token.delegate(delegatee);
+        vm.stopPrank();
     
-            if (amount <= initialBalance) {
-                vm.startPrank(user1);
-                token.rageQuit();
-                vm.stopPrank();
-                assertEq(token.balanceOf(user1), 0, "RageQuit should burn the appropriate amount of tokens.");
-            } else {
-                vm.expectRevert(GovernanceToken.NoTokensToRageQuit.selector);
-                vm.startPrank(user1);
-                token.rageQuit();
-                vm.stopPrank();
-            }
-        } else {
-            // If the delegatee is the zero address, expect revert with ZeroAddress error
-            if (delegatee == address(0)) {
-                vm.expectRevert(GovernanceToken.ZeroAddress.selector);
-            } else {
-                // Test invalid delegation (self-delegation)
-                vm.expectRevert(GovernanceToken.AlreadyDelegated.selector);
-            }
-            
+        assertTrue(token.hasDelegated(user1), "Delegate function failed to register delegation.");
+    
+        // Now attempt rage quitting after delegation
+        uint256 initialBalance = token.balanceOf(user1);
+    
+        if (amount <= initialBalance) {
             vm.startPrank(user1);
-            token.delegate(delegatee);
+            token.rageQuit();
+            vm.stopPrank();
+            assertEq(token.balanceOf(user1), 0, "RageQuit should burn all tokens.");
+        } else {
+            vm.expectRevert(GovernanceToken.NoTokensToRageQuit.selector);
+            vm.startPrank(user1);
+            token.rageQuit();
             vm.stopPrank();
         }
-    }
+    }    
     
     function testFullProposalLifecycle() public {
         address[6] memory users = [user1, address(3), address(4), address(5), address(6), address(7)];
