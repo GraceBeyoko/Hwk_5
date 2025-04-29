@@ -50,6 +50,7 @@ During development, we encountered a few technical and interpersonal challenges.
 Within the dev OP team, one of the hardest parts was reviewing and building upon each other's code. It required putting ourselves in the mindset of another developer, understanding why certain decisions were made, and constantly verifying whether the implementation still aligned with our overall project goals.
 
 **Reference**
+
 Gibbard, A. (1977). Manipulation of voting schemes: A general result. Econometrica, 45(4), 665–681. https://doi.org/10.2307/1914083
 
 Fishburn, P. C. (1982). The foundations of expected utility. Theory and Decision Library. Dordrecht: D. Reidel Publishing Company.
