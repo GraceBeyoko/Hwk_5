@@ -43,6 +43,19 @@ Here is a list of the key function :
 
 ADD DIAGRAM
 
+**Test**
+
+As a way to ensure that the contracts works properly, we had to run few test. For the `ArtGalleryToken` contract, here is a list of the tests conducted : 
+
+- `testMint()`: This test verifies that after the mint function is called during setup, the user correctly holds exactly 100 tokens as expected.
+- `testFuzz_Mint(uint256 amount)`: This fuzz test ensures that minting any amount of tokens between 1e18 and 1e24 properly updates the user’s balance without breaking.
+- `testDelegate()` : This test checks that when a user delegates their voting power, the delegation is properly recorded and recognized by the system.
+- `testRageQuit()` : This test ensures that when a user calls `rageQuit`, all of their tokens are burned and their balance correctly becomes zero afterward.
+- `testFuzz_DelegateAndRageQuit(address delegatee, uint256 amount)` : This complex fuzz test checks that delegation succeeds or reverts for invalid addresses and that rage quitting properly burns all tokens afterwards.
+- `testFullProposalLifecycle()` : This end-to-end test verifies that proposals can be created, voted on, finalized, confirmed by signers, and executed fully through their lifecycle.
+
+
+
 **Reflection**
 
 During development, we encountered a few technical and interpersonal challenges. On the technical side, we initially faced minor merge conflicts when combining our work, but these were quickly and easily resolved. Our major difficulty lay in optimizing the token contract to reduce gas usage and getting the gallery contract to function properly on Foundry. These issues took a considerable amount of time and iterations to solve. Managing the project as a group was also challenging, as we were all balancing internships and operating across different time zones, making scheduling and coordination difficult. 
