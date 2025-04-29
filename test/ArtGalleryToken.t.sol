@@ -139,8 +139,8 @@ contract GalleryTest is Test {
         core.finalizeProposal(0);
 
         // Assert state
-        GovernanceCore.ProposalState state = core.getProposalState(0);
-        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Succeeded));
+        GalleryCore.ProposalState state = core.getProposalState(0);
+        assertEq(uint8(state), uint8(GalleryCore.ProposalState.Succeeded));
 
         // Confirm the proposal execution using two multi-sig signers
         vm.prank(address(10)); // Signer 1
