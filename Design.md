@@ -4,9 +4,9 @@ This document dives deeper into the technical side of our DAO while providing in
 
 **Technical specification**
 
-1. **GovernanceToken**
+1. **ArtGalleryToken**
 
-For our DAO, we choose to only use two ERC20 smart contracts for simplicity purpose and familiarity for both users and developers. Our first smart contract is the GovernanceToken. In our gallery context, this token is more than just a digital asset. In fact, it represents a member's right to participate in curating the gallery’s future. Users are allowed to mint new tokens which enable them to vote, delagate and exit the voting system. 
+For our DAO, we choose to only use two ERC20 smart contracts for simplicity purpose and familiarity for both users and developers. Our first smart contract is the ArtGalleryToken. In our gallery context, this token is more than just a digital asset. In fact, it represents a member's right to participate in curating the gallery’s future. Users are allowed to mint new tokens which enable them to vote, delagate and exit the voting system. 
 
 Here is a list of the key function : 
 
@@ -16,9 +16,9 @@ Here is a list of the key function :
 
 - `rageQuit()`: Burns sender’s tokens and resets delegation/voting status.
 
-2. **Governance**
+2. **Gallery**
 
-The second contract is Governance which defines the management of our virtual art gallery. Through this contract  gallery members can propose and vote for an art piece. Participation is reserved for committed members (defined as having at least 10 delegated governance tokens). Each proposal must specify its type: either Routine or Strategic. Routine proposal are for minor decisions such as minor exhibitions, event logistics etc.. On the other hand, strategic proposals deal with major decisions such as acquisitions for the permanent collection or redefinition of gallery themes. This classification determines whether the proposal will follow a standard success-vote model or trigger the alternative selection mechanism (weighted random dictatorship). In this case, after the voting period, instead of selecting the top-voted proposal, we apply a weighted random dictatorship. This means that each strategic proposal’s chance of being selected is proportional to the quadratic votes it received. This introduces an element of probabilistic fairness, honoring the community's broad support while avoiding the tyranny of numerical majorities — a method rooted in social choice theory. In particular, Gibbard’s (1977) analysis of strategy-proofness and the inevitability of dictatorial elements in deterministic voting, and Fishburn’s (1982) formalization of expected utility provide theoretical motivation for introducing randomness as a fairness-enhancing feature.
+The second contract is Gallery which defines the management of our virtual art gallery. Through this contract  gallery members can propose and vote for an art piece. Participation is reserved for committed members (defined as having at least 10 delegated ArtGalleryToken). Each proposal must specify its type: either Routine or Strategic. Routine proposal are for minor decisions such as minor exhibitions, event logistics etc.. On the other hand, strategic proposals deal with major decisions such as acquisitions for the permanent collection or redefinition of gallery themes. This classification determines whether the proposal will follow a standard success-vote model or trigger the alternative selection mechanism (weighted random dictatorship). In this case, after the voting period, instead of selecting the top-voted proposal, we apply a weighted random dictatorship. This means that each strategic proposal’s chance of being selected is proportional to the quadratic votes it received. This introduces an element of probabilistic fairness, honoring the community's broad support while avoiding the tyranny of numerical majorities — a method rooted in social choice theory. In particular, Gibbard’s (1977) analysis of strategy-proofness and the inevitability of dictatorial elements in deterministic voting, and Fishburn’s (1982) formalization of expected utility provide theoretical motivation for introducing randomness as a fairness-enhancing feature.
 
 To avoid wealthy gallery members having too much power over voting mechanism (hence creating a bias in the votinng process), we opted for a qauadratic voting system to diminish the marginal influence of each additional token.
 
@@ -45,7 +45,7 @@ ADD DIAGRAM
 
 **Reflection**
 
-During development, we encountered a few technical and interpersonal challenges. On the technical side, we initially faced minor merge conflicts when combining our work, but these were quickly and easily resolved. Our major difficulty lay in optimizing the token contract to reduce gas usage and getting the governance contract to function properly on Foundry. These issues took a considerable amount of time and iterations to solve. Managing the project as a group was also challenging, as we were all balancing internships and operating across different time zones, making scheduling and coordination difficult. 
+During development, we encountered a few technical and interpersonal challenges. On the technical side, we initially faced minor merge conflicts when combining our work, but these were quickly and easily resolved. Our major difficulty lay in optimizing the token contract to reduce gas usage and getting the gallery contract to function properly on Foundry. These issues took a considerable amount of time and iterations to solve. Managing the project as a group was also challenging, as we were all balancing internships and operating across different time zones, making scheduling and coordination difficult. 
 
 Within the dev OP team, one of the hardest parts was reviewing and building upon each other's code. It required putting ourselves in the mindset of another developer, understanding why certain decisions were made, and constantly verifying whether the implementation still aligned with our overall project goals.
 
