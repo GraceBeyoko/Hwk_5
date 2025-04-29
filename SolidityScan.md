@@ -1,7 +1,7 @@
 SolidityScan Report
 GovernanceToken.sol
 
-File: Hwk_5-1745770314247/contracts/src/GovernanceToken.sol
+File: Hwk_5/src/GovernanceToken.sol
 Issues
 | #  | Name                               | Severity       | Confidence | Description                                                        | Remediation     |
 |----|------------------------------------|----------------|------------|--------------------------------------------------------------------|-----------------|
@@ -29,7 +29,7 @@ Scan Summary:
 
 Governance.sol
 
-File: Hwk_5-1745770314247/contracts/src/Governance.sol
+File: Hwk_5/src/Governance.sol
 Issues
 | #  | Name                                  | Severity       | Confidence | Description                                                           | Remediation        |
 |----|---------------------------------------|----------------|------------|-----------------------------------------------------------------------|--------------------|
