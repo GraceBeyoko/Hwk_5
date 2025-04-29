@@ -2,7 +2,7 @@
 
 This document provides an analysis of the gas cost for participating in governance actions within the ArtGalleryDAO protocol, including a proposed incentive model and an implementation outline for gas refunds.
 
-The full gas report and snapshot can be found in gas-report.txt and .gas-snapshot respectively.
+The full gas report and snapshot can be found in the audit folder, in gas-report.txt and .gas-snapshot respectively.
 ---
 
 ## Assumptions
