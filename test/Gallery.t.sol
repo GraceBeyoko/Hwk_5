@@ -3,21 +3,21 @@ pragma solidity ^0.8.25;
 
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
-import "../src/Governance.sol";
-import "../src/GovernanceToken.sol";
+import "../src/Gallery.sol";
+import "../src/ArtGalleryToken.sol";
 
-contract GovernanceTest is Test {
-    GovernanceCore core;
-    GovernanceToken token;
+contract GalleryTest is Test {
+    GalleryCore core;
+    ArtGalleryToken token;
     address owner = address(1);
     address user1 = address(2);
     address user2 = address(3);
 
     function setUp() public {
         vm.startPrank(owner);
-        token = new GovernanceToken();
+        token = new ArtGalleryToken();
         address[3] memory signers = [address(10), address(11), address(12)];
-        core = new GovernanceCore(address(token), signers);
+        core = new GalleryCore(address(token), signers);
         token.mint(user1, 100e18);
         vm.stopPrank();
     }
@@ -36,11 +36,11 @@ contract GovernanceTest is Test {
 
         // User creates a proposal
         bytes memory callData = abi.encodeWithSignature("someFunction()");
-        core.createProposal("Test Proposal", callData, GovernanceCore.ProposalType.Routine);
+        core.createProposal("Test Proposal", callData, GalleryCore.ProposalType.Routine);
         
         // Verify that the proposal is created successfully
         GovernanceCore.ProposalState state = core.getProposalState(0);
-        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Pending), "Proposal state should be Pending");
+        assertEq(uint8(state), uint8(GalleryCore.ProposalState.Pending), "Proposal state should be Pending");
         vm.stopPrank();
     }
 
@@ -57,7 +57,7 @@ contract GovernanceTest is Test {
 
         // Act & Assert: Expect the createProposal call to fail due to insufficient voting power
         vm.expectRevert("Insufficient voting power");
-        core.createProposal("Test Proposal", abi.encodeWithSignature("someFunction()"), GovernanceCore.ProposalType.Routine);
+        core.createProposal("Test Proposal", abi.encodeWithSignature("someFunction()"), GalleryCore.ProposalType.Routine);
 
         vm.stopPrank();
     }
@@ -78,7 +78,7 @@ contract GovernanceTest is Test {
 
         vm.prank(user1);
         bytes memory callData = abi.encodeWithSignature("someFunction()");
-        core.createProposal("Test Proposal", callData, GovernanceCore.ProposalType.Routine);
+        core.createProposal("Test Proposal", callData, GalleryCore.ProposalType.Routine);
 
         // Advance time past voting delay
         vm.warp(block.timestamp + core.VOTING_DELAY());
@@ -128,7 +128,7 @@ contract GovernanceTest is Test {
 
         // User creates a proposal
         bytes memory callData = abi.encodeWithSignature("someFunction()");
-        core.createProposal("Test Proposal", callData, GovernanceCore.ProposalType.Routine);
+        core.createProposal("Test Proposal", callData, GalleryCore.ProposalType.Routine);
         
         // Verify that the proposal is created successfully
         GovernanceCore.ProposalState state = core.getProposalState(0);
@@ -156,7 +156,7 @@ contract GovernanceTest is Test {
 
         vm.prank(user1);
         bytes memory callData = abi.encodeWithSignature("someFunction()");
-        core.createProposal("Test Proposal", callData, GovernanceCore.ProposalType.Routine);
+        core.createProposal("Test Proposal", callData, GalleryCore.ProposalType.Routine);
 
         // Advance time past voting delay
         vm.warp(block.timestamp + core.VOTING_DELAY());
@@ -202,7 +202,7 @@ contract GovernanceTest is Test {
         vm.roll(block.number + 1);
     
         bytes memory callData = abi.encodeWithSignature("someFunction()");
-        core.createProposal("Test Proposal", callData, GovernanceCore.ProposalType.Routine);
+        core.createProposal("Test Proposal", callData, GalleryCore.ProposalType.Routine);
     
         // Simulate voting delay using fuzzed timestamp
         // Ensure that we add enough time to surpass the voting delay
@@ -211,7 +211,7 @@ contract GovernanceTest is Test {
     
         // Check the proposal state (it should be active after voting delay)
         GovernanceCore.ProposalState state = core.getProposalState(0);
-        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Active), "Proposal should be Active after voting delay");
+        assertEq(uint8(state), uint8(GalleryCore.ProposalState.Active), "Proposal should be Active after voting delay");
     
         vm.stopPrank();
     }    
