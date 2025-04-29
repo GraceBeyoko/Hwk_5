@@ -10,7 +10,8 @@ The **overall security posture** of this project is **moderate**, with **multipl
 
 **Scan Summary Scores:**
 - ArtGalleryToken.sol: 55.70
-- Gallery.sol: 55.98  
+- Gallery.sol: 55.98
+
 These scores reflect average security hygiene, with room for significant improvement.
 
 ---
