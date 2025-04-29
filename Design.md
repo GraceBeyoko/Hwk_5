@@ -63,6 +63,12 @@ For the `Gallery` contract, the following tests were performed :
 - `testFuzzCastVoteQuadratic` : Checks that quadratic voting works correctly with random token amounts between 1 and 100 tokens, validating that the quadratic votes are computed accurately.
 - `testFuzzProposalState` : After creating a proposal, it fast-forwards time with a random future timestamp and checks that the proposal correctly transitions to "active" after the voting delay.
 
+**Deployement address**
+
+The final deployed contract addresses are as follows:
+
+- ArtGalleryToken deployed at: `0x9b943bF963d9406960a0BbC7a4C62ca645730F73`
+- GalleryCore deployed at: `0xD0445b4adB65491f61F3C1322776cca545d2d763`
 
 **Reflection**
 
