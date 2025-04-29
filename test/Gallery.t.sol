@@ -131,8 +131,8 @@ contract GalleryTest is Test {
         core.createProposal("Test Proposal", callData, GalleryCore.ProposalType.Routine);
         
         // Verify that the proposal is created successfully
-        GovernanceCore.ProposalState state = core.getProposalState(0);
-        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Pending), "Proposal state should be Pending");
+        GalleryCore.ProposalState state = core.getProposalState(0);
+        assertEq(uint8(state), uint8(GalleryCore.ProposalState.Pending), "Proposal state should be Pending");
         vm.stopPrank();
     }
 
