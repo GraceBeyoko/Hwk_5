@@ -14,7 +14,7 @@ pragma solidity ^0.8.25;
 
 import "./ArtGalleryToken.sol";
 
-contract GovernanceCore {
+contract GalleryCore {
     ArtGalleryToken public token;
 
     uint256 public proposalCount;
@@ -67,7 +67,7 @@ contract GovernanceCore {
     event ProposalExecuted(uint256 indexed proposalId);
 
     constructor(address _tokenAddress, address[3] memory _signers) {
-        token = GovernanceToken(_tokenAddress);
+        token = ArtGalleryToken(_tokenAddress);
         multiSigSigners = _signers;
         // Initialize the cached contract address
         _contractAddress = address(this);
