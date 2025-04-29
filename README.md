@@ -26,9 +26,9 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
  
 ### Smart Contracts
  
-1. **GovernanceToken**: An ERC20 token contract allowing delegation, voting, and rage quitting. Users can delegate their voting power, vote on proposals, and rage quit to burn their tokens and reset their status.
+1. **ArtGalleryToken**: An ERC20 token contract allowing delegation, voting, and rage quitting. Users can delegate their voting power, vote on proposals, and rage quit to burn their tokens and reset their status.
  
-2. **Governance Contract**: Manages the creation of proposals and voting logic. Tracks proposals and their execution status based on community votes.
+2. **Gallery**: Manages the creation of proposals and voting logic. Tracks proposals and their execution status based on community votes.
 
  
 ## Requirements to Run Locally (NOT SURE ABOUT THIS PART YET)
@@ -63,7 +63,7 @@ forge build
  
 forge test #have to write the test code
 
-forge create src/GovernanceToken.sol:GovernanceToken $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
+forge create src/ArtGalleryToken.sol:ArtGalleryToken $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
  
 ```
  
@@ -71,7 +71,7 @@ forge create src/GovernanceToken.sol:GovernanceToken $SEPOLIA_RPC_URL --private-
  
 ## Usage Example 
 
-1. **Deploy the GovernanceToken contract**
+1. **Deploy the ArtGalleryToken contract**
 
 Deploy the `GovernanceToken` contract first to create the governance token.
 
