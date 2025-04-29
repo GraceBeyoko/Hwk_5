@@ -98,27 +98,66 @@ contract GovernanceTest is Test {
     }
     
     function testFullProposalLifecycle() public {
-        // Delegate votes to self
-        vm.prank(user1);
-        token.delegate(user1);
+        address[6] memory users = [user1, address(3), address(4), address(5), address(6), address(7)];
     
-        // Advance one block so the delegation is recognized
+        // Mint and delegate tokens to users
+        vm.startPrank(owner);
+        for (uint256 i = 0; i < users.length; ++i) {
+            token.mint(users[i], 10e18);
+        }
+        vm.stopPrank();
+    
+        for (uint256 i = 0; i < users.length; ++i) {
+            vm.prank(users[i]);
+            token.delegate(users[i]);
+    
+            vm.prank(users[i]);
+            token.approve(address(core), 10e18);
+        }
+    
+        // Advance one block so the delegations are recognized
         vm.roll(block.number + 1);
-        
-        // Approve GovernanceCore to spend tokens for voting
+    
+        // Create the proposal from user1
+        bytes memory callData = abi.encodeWithSignature("getProposalState(uint256)", 0);
         vm.prank(user1);
-        token.approve(address(core), 100e18);
+        core.createProposal("Proposal 1", callData, GovernanceCore.ProposalType.Routine);
 
-        // Create the proposal
-        vm.prank(user1);
-        core.createProposal("Proposal 1", "0x", GovernanceCore.ProposalType.Routine);
-    
         // Advance time to allow voting
-        uint40 delay = uint40(core.VOTING_DELAY());
-        vm.warp(block.timestamp + delay);
+        uint256 voteStartTime = block.timestamp + core.VOTING_DELAY();
+        uint256 voteEndTime = voteStartTime + core.VOTING_PERIOD();
+        vm.warp(voteStartTime + 1); // Move to start of voting period
     
-        // Vote
-        vm.prank(user1);
-        core.castVoteQuadratic(0, true, 10e18);
+        // Each user votes
+        for (uint256 i = 0; i < users.length; ++i) {
+            vm.prank(users[i]);
+            core.castVoteQuadratic(0, true, 10e18);
+        }
+    
+        // Advance time to end the voting period
+        vm.warp(voteEndTime + 1);
+    
+        // Finalize the proposal
+        vm.prank(owner);
+        core.finalizeProposal(0);
+
+        // Assert state
+        GovernanceCore.ProposalState state = core.getProposalState(0);
+        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Succeeded));
+
+        // Confirm the proposal execution using two multi-sig signers
+        vm.prank(address(10)); // Signer 1
+        core.confirmProposalExecution(0);
+        
+        vm.prank(address(11)); // Signer 2
+        core.confirmProposalExecution(0);
+
+        // Now execute the proposal
+        vm.prank(owner); // Owner can execute after confirmations
+        core.executeProposal(0);
+        
+        // Assert final state
+        state = core.getProposalState(0);
+        assertEq(uint8(state), uint8(GovernanceCore.ProposalState.Executed));
     }
 }
