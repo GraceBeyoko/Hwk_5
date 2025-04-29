@@ -1,10 +1,7 @@
 # Arti DAO
  
-
- 
 This DAO has been created in the context of our Solidity class as part of Homework 5.
  
-
  
 ## What is the DAO about
  
@@ -38,9 +35,11 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
    - Node.js (≥ 18.x)
  
    - Foundry (Install via `curl -L https://foundry.paradigm.xyz | bash`)
- 
+     ```plaintext
+     - forge install foundry-rs/forge-std --no-commit
+     - forge install OpenZeppelin/openzeppelin-contracts --no-commit
+     ```
    - Alchemy or Infura API key for Sepolia testnet deployments
- 
 
  
 2. **Environment Setup**:
@@ -48,32 +47,29 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
 Create a `.env` file with the following:
  
 ```plaintext
- 
 PRIVATE_KEY=your-wallet-private-key
  
 SEPOLIA_RPC_URL=your-sepolia-rpc-url
- 
 ```
  
 3. **Run the following command** : 
  
 ```plaintext
- 
 forge build
  
-forge test 
-
-forge create src/ArtGalleryToken.sol:ArtGalleryToken $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
- 
+forge test
 ```
  
 
- 
-## Usage Example 
+## Usage Example -- check these
 
 1. **Deploy the ArtGalleryToken contract**
 
 Deploy the `ArtGalleryToken` contract first to create the ArtGalleryToken (AGT) token.
+
+```plaintext
+forge create src/ArtGalleryToken.sol:ArtGalleryToken --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
+```
 
 2. **Deploy the Gallery contract**
 
