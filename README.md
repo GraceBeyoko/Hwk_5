@@ -73,11 +73,11 @@ forge create src/ArtGalleryToken.sol:ArtGalleryToken $SEPOLIA_RPC_URL --private-
 
 1. **Deploy the ArtGalleryToken contract**
 
-Deploy the `ArtGalleryToken` contract first to create the governance token.
+Deploy the `ArtGalleryToken` contract first to create the ArtGalleryToken (AGT) token.
 
 2. **Deploy the Gallery contract**
 
-Deploy the `Gallery contract`, passing in the address of the deployed `ArtGalleryToken`.
+Deploy the `Gallery` contract, passing in the address of the deployed `ArtGalleryToken`.
 
 4. **Create a Proposal**
 
