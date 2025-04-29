@@ -8,7 +8,7 @@ This DAO has been created in the context of our Solidity class as part of Homewo
  
 ## What is the DAO about
  
-Arti DAO is a decentralized autonomous organization focused on curating and showcasing emerging artists. It allows members to propose new artworks and update a virtual gallery through on-chain governance. Members can delegate their voting power, vote on proposals, and exit the DAO entirely by rage quitting, burning their tokens and resetting their governance status.
+Arti DAO is a decentralized autonomous organization focused on curating and showcasing art pieces in a virtual art gallery. It allows members to propose new artworks and update a virtual gallery through on-chain governance. Members can delegate their voting power, vote on proposals, and exit the DAO entirely by rage quitting, burning their tokens and resetting their governance status.
  
 
  
@@ -58,8 +58,6 @@ SEPOLIA_RPC_URL=your-sepolia-rpc-url
 3. **Run the following command** : 
  
 ```plaintext
- 
-forge install #unnecessary?
  
 forge build
  
