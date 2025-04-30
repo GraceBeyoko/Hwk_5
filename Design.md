@@ -24,7 +24,7 @@ Each proposal must specify its type: either Routine or Strategic. Routine propos
 
 This classification determines whether the proposal will follow a standard success-vote model or trigger the alternative selection mechanism (weighted random dictatorship). In this case, after the voting period, instead of selecting the top-voted proposal, we apply a weighted random dictatorship. This means that each strategic proposal’s chance of being selected is proportional to the quadratic votes it received. This introduces an element of probabilistic fairness, honoring the community's broad support while avoiding the tyranny of numerical majorities — a method rooted in social choice theory. In particular, Gibbard’s (1977) analysis of strategy-proofness and the inevitability of dictatorial elements in deterministic voting, and Fishburn’s (1982) formalization of expected utility provide theoretical motivation for introducing randomness as a fairness-enhancing feature.
 
-To avoid wealthy gallery members having too much power over voting mechanism (hence creating a bias in the votinng process), we opted for a qauadratic voting system to diminish the marginal influence of each additional token.
+To avoid wealthy gallery members having too much power over voting mechanism (hence creating a bias in the votinng process), we opted for a quadratic voting system to diminish the marginal influence of each additional token.
 
 Each proposal includes voteStart and voteEnd timestamps, and its state is computed dynamically based on the current block timestamp. Proposals progress through a standard sequence: 
 
