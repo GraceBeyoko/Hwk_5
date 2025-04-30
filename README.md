@@ -27,7 +27,7 @@ Arti DAO is a decentralized autonomous organization focused on curating and show
 2. **Gallery**: Manages the creation of proposals and voting logic. Tracks proposals and their execution status based on community votes.
 
  
-## Requirements to Run Locally (NOT SURE ABOUT THIS PART YET)
+## Requirements to Run Locally
  
 1. **Dependencies**:
  
@@ -60,7 +60,7 @@ forge test
 ```
  
 
-## Usage Example -- check these
+## Usage Example 
 
 1. **Deploy the contracts**
 
