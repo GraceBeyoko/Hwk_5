@@ -6,7 +6,7 @@ This document dives deeper into the technical side of our DAO while providing in
 
 ### 1. **ArtGalleryToken**
 
-For our DAO, we choose to only use ERC20 smart contracts for simplicity purposes as well as capitalising on familiarity for both users and developers. Our smart contract is the `ArtGalleryToken`. In our gallery context, this token is more than just a digital asset. In fact, it represents a member's right to participate in curating the gallery’s future. Users are allowed to mint new tokens which enable them to vote, delagate and exit the voting system. 
+For our DAO, we choose to use the ERC20 token for simplicity purposes as well as capitalising on familiarity for both users and developers. Our first smart contract is the `ArtGalleryToken`. In our gallery context, this token is more than just a digital asset. In fact, it represents a member's right to participate in curating the gallery’s future. Users are allowed to mint new tokens which enable them to vote, delagate and exit the voting system. 
 
 Here is a list of the key functions: 
 
