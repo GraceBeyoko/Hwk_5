@@ -8,7 +8,6 @@ This DAO has been created in the context of our Solidity class as part of Homewo
 Arti DAO is a decentralized autonomous organization focused on curating and showcasing art pieces in a virtual art gallery. It allows members to propose new artworks and update a virtual gallery through on-chain governance. Members can delegate their voting power, vote on proposals, and exit the DAO entirely by rage quitting, burning their tokens and resetting their governance status.
  
 
- 
 ### Tools and Frameworks Used
  
 - **Solidity**: Smart contract development
@@ -63,31 +62,53 @@ forge test
 
 ## Usage Example -- check these
 
-1. **Deploy the ArtGalleryToken contract**
+1. **Deploy the contracts**
 
-Deploy the `ArtGalleryToken` contract first to create the ArtGalleryToken (AGT) token.
+Using the Deploy.s.col script, deploy the `ArtGalleryToken` contract first to create the ArtGalleryToken (AGT) token, and then the `Gallery` contract, passing in the address of the deployed `ArtGalleryToken`.
 
 ```plaintext
-forge create src/ArtGalleryToken.sol:ArtGalleryToken --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
+forge script script/Deploy.s.sol:DeployScript --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
 ```
 
-2. **Deploy the Gallery contract**
+2. **Mint, Delegate, and Approve tokens**
 
-Deploy the `Gallery` contract, passing in the address of the deployed `ArtGalleryToken`.
+Call `mint(address,uint256), delegate(address), and approve(address,uint256)` on the `ArtGalleryToken` contract.
 
+```plaintext
+cast send $ADDRESS(ArtGalleryToken) "mint(address,uint256)" $YOUR_ADDRESS $TOKEN_AMOUNT --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY
+
+cast send $ADDRESS(ArtGalleryToken) "delegate(address)" $YOUR_ADDRESS --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY
+
+cast send $ADDRESS(ArtGalleryToken) "approve(address,uint256)" $ADDRESS(Gallery) $TOKEN_AMOUNT --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY
+```
+   
 4. **Create a Proposal**
 
 Call `createProposal(string calldata description)` on the `Gallery` contract.
+
+```plaintext
+cast send $ADDRESS(Gallery) "createProposal(string,bytes,uint8)" "$NAME" $CALLDATA $TYPE
+```
 
 5. **Vote on Proposals**
 
 Call `vote(uint256 proposalId, bool support)` on the `Gallery` contract to vote.
 
+```plaintext
+cast send $ADDRESS(Gallery) "castVoteQuadratic(uint256,bool,uint256)" $PROPOSAL_ID $VOTE $TOKEN_AMOUNT --rpc-url $SEPOLIA_RPC_URL --private-key 
+```
+
 6. **Execute Approved Proposals**
 
-Once voting is completed and a proposal has passed, it can be executed.
- 
+Once voting is completed and a proposal has passed, it can be finalised by the owner, the execution confirmed by at least 2 of the signers, and then executed.
 
+```plaintext
+cast send $ADDRESS(Gallery) "finalizeProposal(uint256)" $PROPOSAL_ID --rpc-url $SEPOLIA_RPC_URL --private-key 
+
+cast send $ADDRESS(Gallery) "confirmProposalExecution(uint256)" $PROPOSAL_ID --rpc-url $SEPOLIA_RPC_URL --private-key 
+
+cast send $ADDRESS(Gallery) "executeProposal(uint256)" $PROPOSAL_ID --rpc-url $SEPOLIA_RPC_URL --private-key 
+```
 
  
 ## Members of the group and contact
